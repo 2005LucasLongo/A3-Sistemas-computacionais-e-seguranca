@@ -20,6 +20,7 @@ public class A3arquelau {
         // Teste para ver se alguma entrada está vazia
         if (Objects.equals(valor1, "") || Objects.equals(valor2, "") || Objects.equals(operacao, "")) {
             System.out.println("ERRO - Campo obrigatório vazio.");
+            return;
         }
 
         // Teste para ver se a entrada é um número que extrapola o limite do tipo String
