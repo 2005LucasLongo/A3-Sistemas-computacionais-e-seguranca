@@ -5,9 +5,115 @@ import static java.lang.Thread.sleep;
 
 public class Main {
     static final String[] OPERACOES = {"+", "-", "*", "/", "**"};
-    static final Integer ESPACAMENTOPADRAO = 60;
+    static final Integer ESPACAMENTOPADRAO = 100;
 
-    public static void main(String[] args) {
+private static Integer tentaConverterStringParaNumeroBase(Scanner scanner, Integer base, String texto) {
+        Integer numeroConvertido = null;
+        String digito = null;
+        if (texto == null  || texto.isEmpty()) texto = "";
+        while (numeroConvertido == null ){
+            try {
+                System.out.printf("Digite o valor %s: ", texto);
+                digito = scanner.nextLine().trim();
+                numeroConvertido = Integer.parseInt(digito, base);
+            } catch (NumberFormatException nfe){
+                System.out.printf("O conteúdo %s extrapola o limite de 32 bits ou houve digitos inválidos, tente novamente! \n", digito);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return numeroConvertido;
+    }
+
+    public static Integer tentaConverterStringParaBinario(Scanner scanner) {
+        return tentaConverterStringParaNumeroBase(scanner, 2, "binário");
+    }
+
+    @Deprecated
+    public static Integer tentaConverterStringParaDecimal(Scanner scanner) {
+        return tentaConverterStringParaNumeroBase(scanner, 10, "decimal");
+    }
+
+    public static void imrpimirOperacao(final Integer valor1, final Integer valor2, final String operacao, final Integer resultado) throws InterruptedException {
+        final String VALOR1BINARIO = Integer.toBinaryString(valor1);
+        final String VALOR2BINARIO = Integer.toBinaryString(valor2);
+        final Integer TAMANHOOPERACAO = operacao.length() + 1;
+        final String RESULTADOBINARIO = Integer.toBinaryString(resultado);
+        final int MAIORCARACTERE = Integer.max(VALOR1BINARIO.length(), Integer.max(VALOR2BINARIO.length(),
+                RESULTADOBINARIO.length()));
+
+        preencherEspacoComCaractere(" ", (MAIORCARACTERE - VALOR1BINARIO.length() + TAMANHOOPERACAO), Boolean.FALSE);
+        System.out.println(VALOR1BINARIO);
+
+        System.out.print(operacao + " ");
+        preencherEspacoComCaractere(" ", (MAIORCARACTERE - VALOR2BINARIO.length()), Boolean.FALSE);
+        System.out.println(VALOR2BINARIO);
+
+        preencherEspacoComCaractere("-", (MAIORCARACTERE + TAMANHOOPERACAO), Boolean.TRUE);
+        preencherEspacoComCaractere(" ", (MAIORCARACTERE - RESULTADOBINARIO.length() + TAMANHOOPERACAO), Boolean.FALSE);
+        System.out.println(RESULTADOBINARIO);
+        sleep(2000);
+    }
+
+    public static void preencherEspacoComCaractere(final String simbolo, final Integer quantidade, final Boolean pularEspaco){
+        for (int i = 0; i < quantidade; i++) System.out.print(simbolo);
+        if (pularEspaco) System.out.println();
+    }
+
+    public static String escolhaOperacao(Scanner scanner) {
+        String operacao;
+        boolean testeQuebra;
+        do {
+            testeQuebra = Boolean.FALSE;
+            preencherEspacoComCaractere("-", ESPACAMENTOPADRAO, true);
+            System.out.print("Operações disponíveis: ");
+            for (int i = 0; i < OPERACOES.length - 1; i++) System.out.printf("%s, ", OPERACOES[i]);
+            System.out.printf("%s \n", OPERACOES[OPERACOES.length - 1]);
+            preencherEspacoComCaractere("-", ESPACAMENTOPADRAO, true);
+            System.out.print("Escolha a sua operação pelo simbolo representante. (Digite 0 para sair) ");
+            operacao = scanner.nextLine().trim();
+            if (!operacao.equals("0") && verificaDentroArray(operacao, OPERACOES) == -1) {
+                testeQuebra = Boolean.TRUE;
+                System.out.println("Operação inválida! Tente novamente. ");
+            }
+        } while (testeQuebra);
+        return operacao;
+    }
+
+    public static Integer verificaDentroArray(String string, String[] array) {
+        int posicao = -1;
+        for (int i = 0; i < array.length; i++) {
+            if (string.equals(array[i])) posicao = i;
+        }
+        return posicao;
+    }
+
+    public static void boasVindas() {
+        preencherEspacoComTexto(" Bem vindo a Binaladora! ", "-", ESPACAMENTOPADRAO, Boolean.TRUE);
+        System.out.println("Digite os valores em binário e escolha a operação desejada.");
+        System.out.println("A calculadora vai continuar rolando até que você desejar parar no campo de operação.");
+        preencherEspacoComCaractere("-", ESPACAMENTOPADRAO, true);
+    }
+
+    public static void despedida() {
+        System.out.println("Agradecemos por testar nosso produto e esperamos que tenha gostado. Tenha um bom dia ^_^");
+        preencherEspacoComTexto(" Obrigado por usar a Binaladora! ", "-", ESPACAMENTOPADRAO, Boolean.TRUE);
+    }
+
+    public static void limparTela() {
+        for (int i = 0; i < 50; i++) System.out.println();
+    }
+
+    public static void preencherEspacoComTexto(final String texto, final String simbolo, final Integer quantidade, final Boolean pularEspaco){
+        Integer quantidadeInicial = (quantidade - texto.length()) / 2 + 1;
+        Integer quantidadeFinal = (quantidade - texto.length()) / 2;
+        for (int i = 0; i < quantidadeInicial; i++) System.out.print(simbolo);
+        System.out.print(texto);
+        for (int i = 0; i < quantidadeFinal; i++) System.out.print(simbolo);
+        if (pularEspaco) System.out.println();
+    }
+
+    public static void binaladora() {
         Scanner scanner = new Scanner(System.in);
         ArrayList<Integer> listaNumeros = new ArrayList<>();
         Integer resultado = 0;
@@ -30,7 +136,7 @@ public class Main {
                     case "*" -> resultado *= listaNumeros.get(listaNumeros.size() - 1);
                     case "/" -> resultado /= listaNumeros.get(listaNumeros.size() - 1);
                     case "**" -> resultado = (int) Math.pow(resultado, listaNumeros.get(listaNumeros.size() - 1));
-                    case default -> System.out.println("Operação não identidicada!");
+                    default -> System.out.println("Operação não identidicada!");
                 }
                 imrpimirOperacao(listaNumeros.get(listaNumeros.size() -2), listaNumeros.get(listaNumeros.size() -1),
                         operacao, resultado);
@@ -50,86 +156,9 @@ public class Main {
         preencherEspacoComCaractere("-", ESPACAMENTOPADRAO, true);
     }
 
-    public static Integer tentaConverterStringParaBinario(Scanner scanner) {
-        String digito = null;
-        try {
-            System.out.print("Digite o valor binário: ");
-            digito = scanner.nextLine();
-            return Integer.parseInt(digito, 2);
-        } catch (NumberFormatException nfe){
-            System.out.printf("O número %s extrapola o limite de 32 bits ou houveram digitos inválidos, tente novamente! \n", digito);
-        } catch (Exception e){
-            System.out.println("Digito inválido, tente novamente!");
-            System.out.println(e.getMessage());
-        }
-        return tentaConverterStringParaBinario(scanner);
+    public static void main(String[] args) {
+        boasVindas();
+        binaladora();
+        despedida();
     }
-
-    @Deprecated
-    public static Integer tentaConverterStringParaDecimal(Scanner scanner) {
-        String digito = null;
-        try {
-            System.out.println("Digite o valor: ");
-            digito = scanner.nextLine().trim();
-            if (digito.isEmpty()) System.out.println("O conteúdo está vazio!"); else return Integer.parseInt(digito);
-        } catch (NumberFormatException nfe){
-            System.out.printf("O contúdo %s extrapola o limite de 32 bits ou houveram digitos inválidos, tente novamente!\n", digito);
-        } catch (Exception e){
-            System.out.println("Digito inválido, tente novamente!");
-        }
-        return tentaConverterStringParaDecimal(scanner);
-    }
-
-    public static void imrpimirOperacao(final Integer valor1, final Integer valor2, final String operacao, final Integer resultado) throws InterruptedException {
-        final String VALOR1BINARIO = Integer.toBinaryString(valor1);
-        final String VALOR2BINARIO = Integer.toBinaryString(valor2);
-        final String RESULTADOBINARIO = Integer.toBinaryString(resultado);
-        final int MAIORCARACTERE = Integer.max(VALOR1BINARIO.length(), Integer.max(VALOR2BINARIO.length(),
-                RESULTADOBINARIO.length()));
-
-        preencherEspacoComCaractere(" ", (MAIORCARACTERE - VALOR1BINARIO.length() + 2), Boolean.FALSE);
-        System.out.println(VALOR1BINARIO);
-
-        System.out.print(operacao + " ");
-        preencherEspacoComCaractere(" ", (MAIORCARACTERE - VALOR2BINARIO.length()), Boolean.FALSE);
-        System.out.println(VALOR2BINARIO);
-
-        preencherEspacoComCaractere("-", (MAIORCARACTERE + 2), Boolean.TRUE);
-        preencherEspacoComCaractere(" ", (MAIORCARACTERE - RESULTADOBINARIO.length() + 2), Boolean.FALSE);
-        System.out.println(RESULTADOBINARIO);
-        sleep(2000);
-    }
-
-    public static void preencherEspacoComCaractere(final String simbolo, final Integer quantidade, final Boolean pularEspaco){
-        for (int i = 0; i < quantidade; i++) System.out.print(simbolo);
-        if (pularEspaco) System.out.println();
-    }
-
-     public static String escolhaOperacao(Scanner scanner) {
-         String operacao;
-         boolean testeQuebra;
-         do {
-             testeQuebra = Boolean.FALSE;
-             preencherEspacoComCaractere("-", ESPACAMENTOPADRAO, true);
-             System.out.print("Operações disponíveis: ");
-             for (int i = 0; i < OPERACOES.length - 1; i++) System.out.printf("%s, ", OPERACOES[i]);
-             System.out.printf("%s \n", OPERACOES[OPERACOES.length - 1]);
-             preencherEspacoComCaractere("-", ESPACAMENTOPADRAO, true);
-             System.out.print("Escolha a sua operação pelo simbolo representante. (Digite 0 para sair) ");
-             operacao = scanner.nextLine().trim();
-             if (!operacao.equals("0") && verificaDentroArray(operacao, OPERACOES) == -1) {
-                 testeQuebra = Boolean.TRUE;
-                 System.out.println("Operação inválida! Tente novamente. ");
-             }
-         } while (testeQuebra);
-         return operacao;
-     }
-
-     public static Integer verificaDentroArray(String string, String[] array) {
-        int posicao = -1;
-         for (int i = 0; i < array.length; i++) {
-             if (string.equals(array[i])) posicao = i;
-         }
-        return posicao;
-     }
 }
