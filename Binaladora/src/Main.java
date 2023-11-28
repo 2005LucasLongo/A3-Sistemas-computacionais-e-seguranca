@@ -13,7 +13,7 @@ private static Integer tentaConverterStringParaNumeroBase(Scanner scanner, Integ
         if (texto == null  || texto.isEmpty()) texto = "";
         while (numeroConvertido == null ){
             try {
-                System.out.printf("Digite o valor %s: ", texto);
+                System.out.printf("Digite o valor na base %s: ", texto);
                 digito = scanner.nextLine().trim();
                 numeroConvertido = Integer.parseInt(digito, base);
             } catch (NumberFormatException nfe){
@@ -26,10 +26,9 @@ private static Integer tentaConverterStringParaNumeroBase(Scanner scanner, Integ
     }
 
     public static Integer tentaConverterStringParaBinario(Scanner scanner) {
-        return tentaConverterStringParaNumeroBase(scanner, 2, "binário");
+        return tentaConverterStringParaNumeroBase(scanner, 2, "binária");
     }
 
-    @Deprecated
     public static Integer tentaConverterStringParaDecimal(Scanner scanner) {
         return tentaConverterStringParaNumeroBase(scanner, 10, "decimal");
     }
@@ -67,7 +66,7 @@ private static Integer tentaConverterStringParaNumeroBase(Scanner scanner, Integ
             testeQuebra = Boolean.FALSE;
             preencherEspacoComCaractere("-", ESPACAMENTOPADRAO, true);
             System.out.print("Operações disponíveis: ");
-            for (int i = 0; i < OPERACOES.length - 1; i++) System.out.printf("%s, ", OPERACOES[i]);
+            for (int i = 0; i < OPERACOES.length - 1; i++) {System.out.printf("%s, ", OPERACOES[i]);}
             System.out.printf("%s \n", OPERACOES[OPERACOES.length - 1]);
             preencherEspacoComCaractere("-", ESPACAMENTOPADRAO, true);
             System.out.print("Escolha a sua operação pelo simbolo representante. (Digite 0 para sair) ");
